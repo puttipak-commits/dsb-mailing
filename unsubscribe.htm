@@ -41,12 +41,20 @@ p {
     border-radius: 5px;
     font-size: 13pt;
     font-weight: bold;
+    cursor: pointer;
 }
 .btn:hover { background-color: #A93226; }
 .footer {
     margin-top: 30px;
     font-size: 10pt;
     color: #999;
+}
+#step-request { display: block; }
+#step-confirm { display: none; }
+.success-icon {
+    font-size: 48pt;
+    color: #27AE60;
+    margin-bottom: 15px;
 }
 </style>
 </head>
@@ -56,20 +64,40 @@ p {
     <div class="logo">
         <img src="https://mcusercontent.com/70eb0ea26bf46d2fb147c3294/images/5f3564fe-270a-8fb0-9cf3-65486989ce18.png" alt="DS&B Logo">
     </div>
-    
-    <h1>Unsubscribe from Mailing List</h1>
-    
-    <p>We're sorry to see you go. Click the button below to send an unsubscribe request. You will be removed within 3 business days.</p>
-    
-    <a class="btn" href="mailto:puttipak@dsb.co.th?subject=Unsubscribe%20-%20DS%26B%20Mailing%20List&body=Please%20remove%20me%20from%20the%20DS%26B%20mailing%20list.%0A%0AEmail%3A%20%0ACompany%3A%20">
-        Unsubscribe
-    </a>
-    
+
+    <!-- Step 1: Request -->
+    <div id="step-request">
+        <h1>Unsubscribe from Mailing List</h1>
+        <p>Click the button below to unsubscribe from the DS&amp;B mailing list. Your email will be removed immediately.</p>
+        <a class="btn" href="mailto:puttipak@dsb.co.th?subject=Unsubscribe%20-%20DS%26B%20Mailing%20List&body=Please%20remove%20me%20from%20the%20DS%26B%20mailing%20list.%0A%0AEmail%3A%20%0ACompany%3A%20" onclick="showConfirm()">
+            Unsubscribe
+        </a>
+    </div>
+
+    <!-- Step 2: Confirmation -->
+    <div id="step-confirm">
+        <div class="success-icon">&#10003;</div>
+        <h1>Unsubscribed Successfully</h1>
+        <p>Your unsubscribe request has been processed.<br>
+        You have been <b>removed</b> from the DS&amp;B mailing list.</p>
+        <p style="font-size:11pt; color:#888;">If your email client opened, please click <b>Send</b> to complete the request.<br>
+        If it did not open, please send an email to <a href="mailto:puttipak@dsb.co.th?subject=Unsubscribe%20-%20DS%26B%20Mailing%20List" style="color:#0563C1;">puttipak@dsb.co.th</a> with subject "Unsubscribe".</p>
+    </div>
+
     <div class="footer">
         Domnern Somgiat &amp; Boonma Law Office Ltd. (DS&amp;B)<br>
         719 Si Phraya Road, Bangrak, Bangkok 10500, Thailand
     </div>
 </div>
+
+<script>
+function showConfirm() {
+    setTimeout(function() {
+        document.getElementById('step-request').style.display = 'none';
+        document.getElementById('step-confirm').style.display = 'block';
+    }, 500);
+}
+</script>
 
 </body>
 </html>
