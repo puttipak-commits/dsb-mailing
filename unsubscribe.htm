@@ -21,17 +21,11 @@ body {
 }
 .logo { margin-bottom: 25px; }
 .logo img { width: 250px; height: auto; }
-h1 {
-    font-size: 20pt;
-    color: #333;
-    margin: 0 0 15px 0;
-}
-p {
-    font-size: 12pt;
-    color: #555;
-    line-height: 1.6;
-    margin: 0 0 25px 0;
-}
+h1 { font-size: 20pt; margin: 0 0 15px 0; }
+p { font-size: 12pt; color: #555; line-height: 1.6; margin: 0 0 20px 0; }
+.success-icon { font-size: 60pt; color: #27AE60; margin-bottom: 10px; }
+.email-display { font-weight: bold; color: #333; font-size: 13pt; }
+.footer { margin-top: 25px; font-size: 10pt; color: #999; }
 .btn {
     display: inline-block;
     background-color: #C0392B;
@@ -42,20 +36,20 @@ p {
     font-size: 13pt;
     font-weight: bold;
     cursor: pointer;
+    border: none;
 }
 .btn:hover { background-color: #A93226; }
-.footer {
-    margin-top: 30px;
-    font-size: 10pt;
-    color: #999;
+input[type="email"] {
+    width: 80%;
+    padding: 12px;
+    font-size: 13pt;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-family: Calibri, Arial, sans-serif;
 }
-#step-request { display: block; }
-#step-confirm { display: none; }
-.success-icon {
-    font-size: 48pt;
-    color: #27AE60;
-    margin-bottom: 15px;
-}
+input[type="email"]:focus { border-color: #C0392B; outline: none; }
 </style>
 </head>
 <body>
@@ -65,23 +59,31 @@ p {
         <img src="https://mcusercontent.com/70eb0ea26bf46d2fb147c3294/images/5f3564fe-270a-8fb0-9cf3-65486989ce18.png" alt="DS&B Logo">
     </div>
 
-    <!-- Step 1: Request -->
-    <div id="step-request">
-        <h1>Unsubscribe from Mailing List</h1>
-        <p>Click the button below to unsubscribe from the DS&amp;B mailing list. Your email will be removed immediately.</p>
-        <a class="btn" href="mailto:puttipak@dsb.co.th?subject=Unsubscribe%20-%20DS%26B%20Mailing%20List&body=Please%20remove%20me%20from%20the%20DS%26B%20mailing%20list.%0A%0AEmail%3A%20%0ACompany%3A%20" onclick="showConfirm()">
-            Unsubscribe
-        </a>
+    <!-- Loading state (auto-submit mode) -->
+    <div id="step-loading" style="display:none;">
+        <p style="color:#888;">Processing your request...</p>
     </div>
 
-    <!-- Step 2: Confirmation -->
-    <div id="step-confirm">
+    <!-- Form state (manual mode - no email in URL) -->
+    <div id="step-form">
+        <h1 style="color:#333;">Unsubscribe from Mailing List</h1>
+        <p>Enter your email address to unsubscribe from the DS&amp;B mailing list.</p>
+        <input type="email" id="email-input" placeholder="your@email.com"><br>
+        <button class="btn" onclick="submitUnsubscribe()">Unsubscribe</button>
+    </div>
+
+    <!-- Success state -->
+    <div id="step-success" style="display:none;">
         <div class="success-icon">&#10003;</div>
-        <h1>Unsubscribed Successfully</h1>
-        <p>Your unsubscribe request has been processed.<br>
-        You have been <b>removed</b> from the DS&amp;B mailing list.</p>
-        <p style="font-size:11pt; color:#888;">If your email client opened, please click <b>Send</b> to complete the request.<br>
-        If it did not open, please send an email to <a href="mailto:puttipak@dsb.co.th?subject=Unsubscribe%20-%20DS%26B%20Mailing%20List" style="color:#0563C1;">puttipak@dsb.co.th</a> with subject "Unsubscribe".</p>
+        <h1 style="color:#27AE60;">Unsubscribed Successfully</h1>
+        <p>The email address<br><span id="display-email" class="email-display"></span><br>has been removed from the DS&amp;B mailing list.</p>
+        <p>You will no longer receive emails from us.</p>
+    </div>
+
+    <!-- Error state -->
+    <div id="step-error" style="display:none;">
+        <h1 style="color:#C0392B;">Something went wrong</h1>
+        <p>Please try again or contact us at<br><a href="mailto:puttipak@dsb.co.th" style="color:#0563C1;">puttipak@dsb.co.th</a></p>
     </div>
 
     <div class="footer">
@@ -91,13 +93,64 @@ p {
 </div>
 
 <script>
-function showConfirm() {
-    setTimeout(function() {
-        document.getElementById('step-request').style.display = 'none';
-        document.getElementById('step-confirm').style.display = 'block';
-    }, 500);
+function sendToFormspree(email) {
+    document.getElementById('step-form').style.display = 'none';
+    document.getElementById('step-loading').style.display = 'block';
+
+    fetch('https://formspree.io/f/mqedjwpp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+            email: email,
+            message: 'Unsubscribe request from ' + email,
+            _subject: 'Unsubscribe - ' + email
+        })
+    })
+    .then(function(response) {
+        document.getElementById('step-loading').style.display = 'none';
+        if (response.ok) {
+            document.getElementById('display-email').textContent = email;
+            document.getElementById('step-success').style.display = 'block';
+        } else {
+            document.getElementById('step-error').style.display = 'block';
+        }
+    })
+    .catch(function() {
+        document.getElementById('step-loading').style.display = 'none';
+        document.getElementById('step-error').style.display = 'block';
+    });
 }
+
+function submitUnsubscribe() {
+    var email = document.getElementById('email-input').value.trim();
+    if (!email || email.indexOf('@') === -1) {
+        document.getElementById('email-input').style.borderColor = '#C0392B';
+        return;
+    }
+    sendToFormspree(email);
+}
+
+// Allow Enter key to submit
+document.addEventListener('DOMContentLoaded', function() {
+    var input = document.getElementById('email-input');
+    if (input) {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') submitUnsubscribe();
+        });
+    }
+});
+
+// Auto-submit if email is in URL
+(function() {
+    var params = new URLSearchParams(window.location.search);
+    var email = params.get('email');
+    if (email) {
+        document.getElementById('step-form').style.display = 'none';
+        sendToFormspree(email);
+    }
+})();
 </script>
 
 </body>
 </html>
+
