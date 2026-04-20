@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Opening Email Client — DS&amp;B</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    max-width: 520px;
+    margin: 80px auto;
+    padding: 30px 20px;
+    text-align: center;
+    color: #333;
+    line-height: 1.6;
+  }
+  h1 {
+    color: #00316b;
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+  p { margin: 12px 0; }
+  .big-btn {
+    display: inline-block;
+    margin: 20px 0;
+    padding: 14px 28px;
+    background: #00316b;
+    color: #ffffff !important;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 16px;
+  }
+  .fallback {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    font-size: 14px;
+    color: #666;
+  }
+  .fallback a { color: #00316b; }
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #ccc;
+    border-top-color: #00316b;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+  <h1><span class="spinner"></span>Opening your email client&hellip;</h1>
+  <p>If nothing happens automatically, click below:</p>
+  <p><a class="big-btn" href="mailto:mail@dsb.co.th">Email mail@dsb.co.th</a></p>
+  <div class="fallback">
+    <p>Or visit our <a href="https://dsb.co.th/contact/">Contact page</a> for other ways to reach us.</p>
+    <p><strong>Domnern Somgiat &amp; Boonma Law Office Limited</strong><br>
+    Tel: (+66) 2639-1955</p>
+  </div>
+  <script>
+    // Step 1: Wait 150ms for body to render, then trigger the mailto: link.
+    // The mailto: handler (Outlook) will open in a separate window; the
+    // current browser tab stays on this page.
+    setTimeout(function() {
+      window.location.href = 'mailto:mail@dsb.co.th';
+    }, 150);
+
+    // Step 2: After ~1.5 seconds (mailto has had time to fire), try to
+    // close this tab. If the browser blocks window.close() (common in
+    // modern browsers for tabs the user opened via a link), fall back
+    // to redirecting to the DS&B contact page so the tab is not left
+    // blank or showing a "you may close this tab" message.
+    setTimeout(function() {
+      // Try to close (works only if this tab was script-opened, rare here)
+      window.close();
+      // If we're still here, close was blocked — redirect to contact page
+      window.location.replace('https://dsb.co.th/contact/');
+    }, 1500);
+  </script>
+</body>
+</html>
